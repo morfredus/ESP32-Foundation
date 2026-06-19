@@ -146,3 +146,7 @@ custom module from these examples lives in
 
 No business dependency is imposed: each service can be used independently
 of the others.
+
+## License
+
+Distributed under the [MIT License](LICENSE).

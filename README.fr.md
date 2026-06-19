@@ -147,3 +147,7 @@ exemples se trouve dans
 
 Aucune dépendance métier n'est imposée : chaque service est utilisable
 indépendamment des autres.
+
+## Licence
+
+Distribué sous [licence MIT](LICENSE).
