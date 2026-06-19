@@ -130,8 +130,8 @@ Deux notions à bien distinguer dans ce framework :
   web (`WebManager`), mises à jour OTA (`OtaManager`), stockage de fichiers
   (`StorageManager`), réglages persistants (`ConfigManager`), journalisation
   (`LogManager`), informations système (`SystemInfo`), résolution réseau
-  (`MdnsManager`), heure réseau (`TimeManager`). 
-  Un nouveau projet **nemodifie jamais** ces services : ils sont communs à tous les projets basés
+  (`MdnsManager`), heure réseau (`TimeManager`). Un nouveau projet **ne
+  modifie jamais** ces services : ils sont communs à tous les projets basés
   sur ce framework.
 - **Module** (`src/modules/*`) : code métier propre à un projet — ce que le
   projet *fait* réellement (lire un capteur, exposer une API spécifique,

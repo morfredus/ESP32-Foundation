@@ -1,94 +1,148 @@
 # ESP32-Foundation
 
-Framework applicatif générique pour projets ESP32 (PlatformIO / Arduino),
-extrait et généralisé à partir de **Gateway Lab V1** et **MeteoHub-S3**.
+Generic application framework for ESP32 projects (PlatformIO / Arduino),
+extracted and generalized from **Gateway Lab V1** and **MeteoHub-S3**.
 
-ESP32 Foundation est un framework d'applications réutilisable, issu de
-projets ESP32 concrets tels que Gateway Lab et MeteoHub. Il fournit des
-services communs comme la gestion du Wi-Fi, les mises à jour OTA, la
-journalisation, le stockage, une interface web, le routage API et des outils
-de compilation, permettant ainsi aux nouveaux projets de se concentrer sur
-les fonctionnalités spécifiques à leur application.
+*Lire en français : [README.fr.md](README.fr.md)*
 
-Ce framework n'a pas été conçu en premier. Il a été extrait ultérieurement
-de plusieurs projets ESP32 après avoir identifié les composants qui étaient
-fréquemment réutilisés.
+ESP32 Foundation is a reusable application framework, derived from concrete
+ESP32 projects such as Gateway Lab and MeteoHub. It provides common services
+such as Wi-Fi management, OTA updates, logging, storage, a web interface,
+API routing, and build tools, letting new projects focus on the features
+specific to their own application.
 
-Le framework fournit l'infrastructure commune à tout projet ESP32 connecté
-(WiFi, serveur web, logs, OTA, stockage, configuration persistante,
-informations système, mDNS, heure réseau) à travers un système de **modules**
-optionnels : le framework ne connaît jamais le code métier, le métier ne
-connaît jamais l'implémentation des services.
+This framework was not designed first. It was extracted afterwards from
+several ESP32 projects, once the components that kept being reused across
+them had been identified.
+
+The framework provides the common infrastructure needed by any connected
+ESP32 project (WiFi, web server, logs, OTA, storage, persistent
+configuration, system information, mDNS, network time) through an optional
+**module** system: the framework never knows the business code, and the
+business code never knows the service implementation.
 
 ## Structure
 
 ```
 ESP32-Foundation/
-├── include/            project_config.h, board_config.h, secrets_example.h
+├── platformio.ini
+├── README.md                       this file
+├── README.fr.md                    French version
+├── VERSION
+├── data/                            web UI (HTML/CSS/JS) served from LittleFS
+│       files.html
+│       index.html
+│       logs.html
+│       menu.js
+│       ota.html
+│       style.css
+│       system.html
+├── docs/
+│       ARCHITECTURE.md
+│       INTEGRATION_GUIDE.md
+├── examples/
+│   ├── api/                        API routing example (GET/POST/JSON)
+│   │       platformio.ini
+│   │       include/project_config.h
+│   │       src/api_module.cpp, api_module.h, main.cpp
+│   ├── example_project/            historical example (the "Blink" module)
+│   │       platformio.ini
+│   │       include/project_config.h
+│   │       src/blink_module.cpp, blink_module.h, main.cpp
+│   ├── minimal/                    simplest possible example (lifecycle only)
+│   │       platformio.ini
+│   │       include/project_config.h
+│   │       src/main.cpp, minimal_module.cpp, minimal_module.h
+│   └── sensor/                     simulated sensor + persistent setting example
+│           platformio.ini
+│           include/project_config.h
+│           src/main.cpp, sensor_module.cpp, sensor_module.h
+├── include/
+│       board_config.h              generic pin mapping
+│       project_config.h            global framework settings
+│       secrets_example.h           template for include/secrets.h (gitignored)
 ├── src/
-│   ├── core/           App, Module, ModuleManager
-│   ├── services/       wifi, web, ota, storage, config, log, system_info, mdns, time
-│   ├── api/            api_router (WebRouter)
-│   ├── modules/         exemple de module métier
-│   └── main.cpp
-├── data/               interface web (HTML/CSS/JS) servie depuis LittleFS
-├── tools/              build_info.py, minify_web.py, version_generator.py, package_web.py, release.py
-├── docs/               ARCHITECTURE.md, INTEGRATION_GUIDE.md
-└── examples/           example_project, minimal, sensor, api
+│   │   main.cpp                    entry point of the root project
+│   ├── api/
+│   │   └── api_router/
+│   │           api_router.h        WebRouter
+│   ├── core/
+│   │       app.cpp, app.h          App orchestrator
+│   │       module.h                Module base class
+│   │       module_manager.h        ModuleManager
+│   ├── modules/
+│   │   └── example_module/
+│   │           example_module.cpp, example_module.h
+│   └── services/
+│       ├── config_manager/         config_manager.cpp, config_manager.h
+│       ├── log_manager/            log_manager.cpp, log_manager.h
+│       ├── mdns_manager/           mdns_manager.cpp, mdns_manager.h
+│       ├── ota_manager/            ota_manager.cpp, ota_manager.h
+│       ├── storage_manager/        storage_manager.cpp, storage_manager.h
+│       ├── system_info/            system_info.cpp, system_info.h
+│       ├── time_manager/           time_manager.cpp, time_manager.h
+│       ├── web_manager/            web_manager.cpp, web_manager.h
+│       └── wifi_manager/           wifi_manager.cpp, wifi_manager.h
+└── tools/
+        build_info.py
+        minify_web.py
+        package_web.py
+        release.py
+        version_generator.py
 ```
 
-## Démarrage rapide
+## Quick start
 
 ```bash
-cp include/secrets_example.h include/secrets.h   # WiFi de développement (optionnel)
-pio run                                            # compile le firmware
-pio run --target uploadfs                          # flashe data/ (interface web)
-pio run --target upload                            # flashe le firmware
+cp include/secrets_example.h include/secrets.h   # development WiFi credentials (optional)
+pio run                                            # build the firmware
+pio run --target uploadfs                          # flash data/ (web UI)
+pio run --target upload                            # flash the firmware
 ```
 
-Important : exécuter `pio run -t uploadfs` au moins une fois après le tout
-premier flash (et à chaque modification de `data/`) — sans cette étape,
-l'interface web LittleFS est vide et toute page renvoie une page blanche ou
-une erreur 404, même si le firmware fonctionne correctement. Voir l'explication
-détaillée dans
-[docs/INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md#téléverser-linterface-web-littlefs--éviter-la-page-blanche-au-premier-démarrage).
+Important: run `pio run -t uploadfs` at least once after the very first
+flash (and again every time `data/` changes) — without this step, the
+LittleFS web UI is empty and every page returns blank or a 404, even though
+the firmware itself runs correctly. See the detailed explanation in
+[docs/INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md#téléverser-linterface-web-littlefs--éviter-la-page-blanche-au-premier-démarrage)
+(currently documented in French — translation contributions welcome).
 
-Pour changer le nom du projet (logs, `/api/system`, interface web), voir la
-section [Renommer le projet](docs/INTEGRATION_GUIDE.md#renommer-le-projet)
-du guide d'intégration.
+To rename the project (logs, `/api/system`, web UI), see the
+[Renommer le projet](docs/INTEGRATION_GUIDE.md#renommer-le-projet) section of
+the integration guide.
 
-Voir [docs/INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md) pour démarrer un
-nouveau projet, et [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) pour le détail
-des choix de conception et leur origine (Gateway Lab / MeteoHub).
+See [docs/INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md) to start a new
+project, and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design
+choices and where they come from (Gateway Lab / MeteoHub).
 
-## Exemples fournis
+## Provided examples
 
-| Exemple | Description |
+| Example | Description |
 |---|---|
-| `examples/example_project/` | Module "Blink" minimal pilotant la LED embarquée — exemple historique de référence. |
-| `examples/minimal/` | Le module le plus simple possible : cycle de vie `begin()/loop()` uniquement, sans capteur ni route HTTP. À lire en premier. |
-| `examples/sensor/` | Lecture périodique d'une valeur simulée, intervalle de lecture configurable et persistant, route HTTP `GET /api/sensor/value`. |
-| `examples/api/` | Trois routes HTTP de démonstration via `WebRouter` : GET simple, GET avec paramètre de requête, POST avec corps JSON et validation. |
+| `examples/example_project/` | Minimal "Blink" module driving the onboard LED — historical reference example. |
+| `examples/minimal/` | The simplest possible module: `begin()`/`loop()` lifecycle only, no sensor and no HTTP route. Read this one first. |
+| `examples/sensor/` | Periodic reading of a simulated value, configurable and persistent read interval, `GET /api/sensor/value` HTTP route. |
+| `examples/api/` | Three demonstration HTTP routes via `WebRouter`: plain GET, GET with a query parameter, POST with a JSON body and validation. |
 
-Chaque exemple est un projet PlatformIO autonome (voir son propre
-`platformio.ini`, qui référence le framework via `lib_extra_dirs = ../../`).
-Le guide complet, pas à pas, pour créer son propre module à partir de ces
-exemples se trouve dans
+Each example is a standalone PlatformIO project (see its own
+`platformio.ini`, which references the framework via
+`lib_extra_dirs = ../../`). The full, step-by-step guide for building a
+custom module from these examples lives in
 [docs/INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md#créer-son-premier-module-pas-à-pas).
 
-## Services fournis
+## Provided services
 
-| Service          | Rôle                                                         |
+| Service          | Role                                                          |
 |-------------------|---------------------------------------------------------------|
-| `wifiMgr`         | Multi-réseaux NVS, portail captif de secours, reconnexion auto |
-| `webMgr`          | Serveur HTTP : `/`, `/logs`, `/files`, `/system`, `/ota`        |
-| `otaMgr`          | Mise à jour firmware (ArduinoOTA + upload web)                |
-| `storage`         | Fichiers LittleFS (lecture/écriture/liste/suppression)         |
-| `config`          | Réglages persistants clé/valeur (NVS)                          |
-| `logMgr`          | Logs série + tampon JSON (`LOG_INFO`, `LOG_ERROR`, ...)         |
-| `systemInfo`      | État système en JSON (heap, version, WiFi, build...)           |
-| `mdnsMgr`         | Résolution `http://<hostname>.local`                            |
-| `timeMgr`         | Synchronisation NTP                                              |
+| `wifiMgr`         | Multi-network NVS storage, fallback captive portal, auto-reconnect |
+| `webMgr`          | HTTP server: `/`, `/logs`, `/files`, `/system`, `/ota`         |
+| `otaMgr`          | Firmware updates (ArduinoOTA + web upload)                    |
+| `storage`         | LittleFS files (read/write/list/delete)                       |
+| `config`          | Persistent key/value settings (NVS)                           |
+| `logMgr`          | Serial logs + JSON buffer (`LOG_INFO`, `LOG_ERROR`, ...)       |
+| `systemInfo`      | System state as JSON (heap, version, WiFi, build...)          |
+| `mdnsMgr`         | `http://<hostname>.local` resolution                          |
+| `timeMgr`         | NTP synchronization                                            |
 
-Aucune dépendance métier n'est imposée : chaque service est utilisable
-indépendamment des autres.
+No business dependency is imposed: each service can be used independently
+of the others.
