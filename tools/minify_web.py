@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 """
 minify_web.py — Minifie les sources web de web_src/ (.html, .css, .js) et
-écrit le résultat dans data/, avant chaque compilation. data/ est l'image
-servie depuis LittleFS : c'est un dossier généré, jamais édité à la main.
-Contrairement à Gateway Lab/MeteoHub, ESP32-Foundation sert ces fichiers
-directement depuis LittleFS (pas de génération de headers PROGMEM) : ce
-script ne fait que réduire leur taille pour économiser de l'espace flash,
-sans changer leur contenu fonctionnel.
+écrit le résultat dans data/. data/ est l'image servie depuis LittleFS :
+c'est un dossier généré, jamais édité à la main. Contrairement à Gateway
+Lab/MeteoHub, ESP32-Foundation sert ces fichiers directement depuis LittleFS
+(pas de génération de headers PROGMEM) : ce script ne fait que réduire leur
+taille pour économiser de l'espace flash, sans changer leur contenu
+fonctionnel.
+
+Lancement volontairement manuel (absent de extra_scripts dans
+platformio.ini) : la minification n'a de raison de s'exécuter que lorsque
+web_src/ change, pas à chaque compilation du firmware. Voir
+docs/INTEGRATION_GUIDE.md pour le workflow complet, et tools/release.py
+pour l'enchaînement automatique dans un pipeline de release.
+
+Usage :
+  python tools/minify_web.py
 
 Idempotent : peut être exécuté plusieurs fois sans dégrader le résultat
 (à partir des fichiers déjà minifiés, il n'y a simplement plus rien à gagner).
@@ -20,19 +29,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-env = None
-if "Import" in globals():
-    # "Import" est injecté par PlatformIO/SCons dans le contexte exec() ;
-    # absent en exécution standalone (python tools/minify_web.py).
-    globals()["Import"]("env")
-
-# Exécuté par PlatformIO via exec() dans SConscript : __file__ n'existe pas.
-# env["PROJECT_DIR"] est alors la seule source fiable du chemin du projet.
-if env is not None:
-    PROJECT_ROOT = Path(env.get("PROJECT_DIR"))
-else:
-    PROJECT_ROOT = Path(__file__).resolve().parent.parent
-
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SRC_DIR = PROJECT_ROOT / "web_src"
 DATA_DIR = PROJECT_ROOT / "data"
 
@@ -100,9 +97,9 @@ def run() -> bool:
 
 
 def prompt_uploadfs() -> None:
-    # Uniquement en lancement manuel (python tools/minify_web.py) : en
-    # extra_scripts, pio run est déjà en cours d'exécution et appeler
-    # uploadfs ici serait à la fois récursif et non interactif (CI).
+    if not sys.stdin.isatty():
+        # Lancement non interactif (ex. tools/release.py) : pas de prompt.
+        return
     reply = input("Téléverser data/ vers LittleFS maintenant (pio run --target uploadfs) ? [o/N] ").strip().lower()
     if reply in ("o", "oui", "y", "yes"):
         subprocess.run(["pio", "run", "--target", "uploadfs"])
@@ -113,6 +110,3 @@ if __name__ == "__main__":
     if ok:
         prompt_uploadfs()
     sys.exit(0 if ok else 1)
-else:
-    # Appelé via extra_scripts (pre:tools/minify_web.py) par PlatformIO
-    run()

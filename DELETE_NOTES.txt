@@ -1,0 +1,3 @@
+DELETED: data/ota.html (no longer used; data/ is now gitignored and generated)
+RENAMED FROM: data/debug.html, data/files.html, data/index.html, data/logs.html, data/menu.js, data/style.css, data/system.html (now under web_src/, same names)
+Also delete the old data/*.html, data/menu.js, data/style.css files in the repo (data/ is now a generated, gitignored build folder).

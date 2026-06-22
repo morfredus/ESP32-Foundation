@@ -100,13 +100,18 @@ page blanche ou une erreur 404, **même si le firmware fonctionne
 parfaitement** — ce n'est pas un bug, juste un système de fichiers vide.
 
 `data/` est un dossier **généré**, jamais édité à la main : les sources web
-vivent dans `web_src/` (`index.html`, `style.css`, `menu.js`, etc.), et
-`tools/minify_web.py` les minifie vers `data/` avant chaque compilation.
-C'est `data/` qui est téléversé sur la carte.
+vivent dans `web_src/` (`index.html`, `style.css`, `menu.js`, etc.). Lancer
+`tools/minify_web.py` les minifie vers `data/`. C'est `data/` qui est
+téléversé sur la carte.
 
-Pour téléverser le contenu de `data/` :
+Workflow pour modifier l'interface web :
 
 ```bash
+# 1. Éditer les sources dans web_src/
+# 2. Minifier vers data/ (répond ensuite "o" au prompt pour lancer
+#    uploadfs directement, ou "N" pour le faire soi-même à l'étape 3)
+python tools/minify_web.py
+# 3. Téléverser data/ vers LittleFS
 pio run -t uploadfs
 ```
 
@@ -116,15 +121,16 @@ l'environnement (ex. `esp32s3_n16r8`) → "Upload Filesystem Image".
 À retenir :
 - Exécuter `uploadfs` **une fois après le tout premier flash du firmware**,
   pour que l'interface web soit disponible dès le départ.
-- Ré-exécuter `uploadfs` **chaque fois que le contenu de `web_src/` change**
-  (nouvelle page, modification de style, etc.) — le flash du firmware seul
-  ne suffit jamais à mettre à jour l'interface web.
-- `tools/minify_web.py` s'exécute automatiquement avant chaque compilation
-  (`extra_scripts = pre:tools/minify_web.py` dans `platformio.ini`) et
-  régénère `data/` à partir de `web_src/`, en minifiant les fichiers
-  HTML/CSS/JS au passage. Ceci optimise la taille téléversée, mais ne
-  remplace en aucun cas l'étape `uploadfs` : la minification prépare le
-  contenu, `uploadfs` l'envoie réellement sur la carte.
+- Ré-exécuter `python tools/minify_web.py` puis `uploadfs` **chaque fois que
+  le contenu de `web_src/` change** (nouvelle page, modification de style,
+  etc.) — le flash du firmware seul ne suffit jamais à mettre à jour
+  l'interface web.
+- `tools/minify_web.py` est **volontairement manuel** (pas dans
+  `extra_scripts` de `platformio.ini`) : il ne doit s'exécuter que lorsque
+  `web_src/` a réellement changé, pas à chaque compilation du firmware
+  (`pio run -t upload` n'a aucune raison de toucher à `data/`). Voir
+  `tools/release.py` pour le pipeline complet qui l'enchaîne automatiquement
+  avant un build de release.
 
 ## Comprendre l'architecture Module/Service
 
