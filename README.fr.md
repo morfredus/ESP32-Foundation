@@ -31,6 +31,7 @@ ESP32-Foundation/
 ├── README.fr.md                    ce fichier
 ├── VERSION
 ├── data/                            interface web (HTML/CSS/JS) servie depuis LittleFS
+│       debug.html                  page /debug, servie seulement si ENABLE_BOOT_LOG
 │       files.html
 │       index.html
 │       logs.html
@@ -40,6 +41,7 @@ ESP32-Foundation/
 │       system.html
 ├── docs/
 │       ARCHITECTURE.md
+│       BOOT_LOG.md                 module optionnel BootLog (journal de redémarrage)
 │       INTEGRATION_GUIDE.md
 ├── examples/
 │   ├── api/                        exemple de routage API (GET/POST/JSON)
@@ -72,8 +74,10 @@ ESP32-Foundation/
 │   │       module.h                classe Module
 │   │       module_manager.h        ModuleManager
 │   ├── modules/
-│   │   └── example_module/
-│   │           example_module.cpp, example_module.h
+│   │   ├── example_module/
+│   │   │       example_module.cpp, example_module.h
+│   │   └── boot_log/                optionnel, désactivé par défaut — voir docs/BOOT_LOG.md
+│   │           boot_log.cpp, boot_log.h
 │   └── services/
 │       ├── config_manager/         config_manager.cpp, config_manager.h
 │       ├── log_manager/            log_manager.cpp, log_manager.h
@@ -147,6 +151,23 @@ exemples se trouve dans
 
 Aucune dépendance métier n'est imposée : chaque service est utilisable
 indépendamment des autres.
+
+## Modules optionnels
+
+| Module | Rôle |
+|---|---|
+| `exampleModule` | Module de démonstration minimal (`src/modules/example_module/`), toujours actif. |
+| `bootLogModule` | Journal de redémarrage (raison du reset, derniers logs, instantané système avant crash). **Désactivé par défaut**, à activer avec `#define ENABLE_BOOT_LOG` dans `include/project_config.h`. Le lien de menu `/debug` apparaît automatiquement (`data/menu.js` sonde `GET /api/bootlog`) — aucune édition du menu nécessaire dans un sens comme dans l'autre. Exemple concret de module entièrement supprimable — voir [docs/BOOT_LOG.md](docs/BOOT_LOG.md). |
+
+## Captures d'écran
+
+| Page | Capture |
+|---|---|
+| Accueil (`/`) | ![Accueil](docs/pictures/ESP32-Foundation-Accueil.jpeg) |
+| Système (`/system`) | ![Système](docs/pictures/ESP32-Foundation-Systeme.jpeg) |
+| Fichiers (`/files`) | ![Fichiers](docs/pictures/ESP32-Foundation-Fichiers.jpeg) |
+| Logs (`/logs`) | ![Logs](docs/pictures/ESP32-Foundation-Logs.jpeg) |
+| Mise à jour (`/ota`) | ![Mise à jour](docs/pictures/ESP32-Foundation-Mise-a-Jour.jpeg) |
 
 ## Licence
 

@@ -1,4 +1,8 @@
 #include "log_manager.h"
+#include "project_config.h"
+#ifdef ENABLE_BOOT_LOG
+#include "../../modules/boot_log/boot_log.h"
+#endif
 
 LogManager logMgr;
 
@@ -17,6 +21,10 @@ void LogManager::log(char level, const char* tag, const char* fmt, va_list args)
     vsnprintf(buf, sizeof(buf), fmt, args);
 
     Serial.printf("[%s][%s] %s\n", _levelName(level), tag, buf);
+
+#ifdef ENABLE_BOOT_LOG
+    bootLogModule.capture(_levelName(level), tag, buf);
+#endif
 
     if (_entries.size() >= LOG_BUFFER_SIZE) {
         _entries.erase(_entries.begin());

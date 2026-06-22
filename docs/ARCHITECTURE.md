@@ -54,6 +54,11 @@ Trois exemples progressifs illustrent ce flux pour un module métier, du plus
 simple au plus complet : `examples/minimal/`, `examples/sensor/` et
 `examples/api/` (voir le détail de chacun dans
 [docs/INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md#créer-son-premier-module-pas-à-pas)).
+`src/modules/boot_log/` est un quatrième exemple, intégré directement au
+dépôt : un module optionnel (désactivé par défaut, `ENABLE_BOOT_LOG`)
+illustrant comment un module métier peut rester totalement découplé du
+reste du framework — au point d'être désactivable d'une seule ligne, ou
+supprimable sans impact ailleurs (voir [docs/BOOT_LOG.md](BOOT_LOG.md)).
 Le nom affiché du projet (`PROJECT_NAME`) se propage de la même façon à
 travers tout le framework, jusqu'à l'interface web — voir
 [docs/INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md#renommer-le-projet) pour le

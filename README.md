@@ -30,6 +30,7 @@ ESP32-Foundation/
 ├── README.fr.md                    French version
 ├── VERSION
 ├── data/                            web UI (HTML/CSS/JS) served from LittleFS
+│       debug.html                  /debug page, served only when ENABLE_BOOT_LOG is on
 │       files.html
 │       index.html
 │       logs.html
@@ -39,6 +40,7 @@ ESP32-Foundation/
 │       system.html
 ├── docs/
 │       ARCHITECTURE.md
+│       BOOT_LOG.md                 optional BootLog module (reboot journal)
 │       INTEGRATION_GUIDE.md
 ├── examples/
 │   ├── api/                        API routing example (GET/POST/JSON)
@@ -71,8 +73,10 @@ ESP32-Foundation/
 │   │       module.h                Module base class
 │   │       module_manager.h        ModuleManager
 │   ├── modules/
-│   │   └── example_module/
-│   │           example_module.cpp, example_module.h
+│   │   ├── example_module/
+│   │   │       example_module.cpp, example_module.h
+│   │   └── boot_log/                optional, disabled by default — see docs/BOOT_LOG.md
+│   │           boot_log.cpp, boot_log.h
 │   └── services/
 │       ├── config_manager/         config_manager.cpp, config_manager.h
 │       ├── log_manager/            log_manager.cpp, log_manager.h
@@ -146,6 +150,23 @@ custom module from these examples lives in
 
 No business dependency is imposed: each service can be used independently
 of the others.
+
+## Optional modules
+
+| Module | Role |
+|---|---|
+| `exampleModule` | Minimal demonstration module (`src/modules/example_module/`), always on. |
+| `bootLogModule` | Reboot journal (reset reason, last logs, system snapshot before crash). **Disabled by default**, enable with `#define ENABLE_BOOT_LOG` in `include/project_config.h`. The `/debug` nav link appears automatically (`data/menu.js` probes `GET /api/bootlog`) — no menu edit needed either way. A concrete, fully removable example module — see [docs/BOOT_LOG.md](docs/BOOT_LOG.md) (currently documented in French — translation contributions welcome). |
+
+## Screenshots
+
+| Page | Screenshot |
+|---|---|
+| Home (`/`) | ![Home](docs/pictures/ESP32-Foundation-Accueil.jpeg) |
+| System (`/system`) | ![System](docs/pictures/ESP32-Foundation-Systeme.jpeg) |
+| Files (`/files`) | ![Files](docs/pictures/ESP32-Foundation-Fichiers.jpeg) |
+| Logs (`/logs`) | ![Logs](docs/pictures/ESP32-Foundation-Logs.jpeg) |
+| Update (`/ota`) | ![Update](docs/pictures/ESP32-Foundation-Mise-a-Jour.jpeg) |
 
 ## License
 

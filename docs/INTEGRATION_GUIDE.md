@@ -168,6 +168,15 @@ croissante :
   requête, POST avec corps JSON et validation.
 - `src/modules/example_module/` — exemple intégré directement dans ce
   dépôt, combinant log + réglage persistant + route HTTP.
+- `src/modules/boot_log/` — exemple intégré directement dans ce dépôt d'un
+  module **optionnel** (désactivé par défaut, activable via
+  `#define ENABLE_BOOT_LOG` dans `project_config.h`) et **entièrement
+  supprimable** sans impact ailleurs dans le framework — voir
+  [docs/BOOT_LOG.md](BOOT_LOG.md) pour le détail et la procédure de retrait.
+  Illustre aussi un pattern réutilisable pour un lien de menu conditionnel :
+  `data/menu.js` sonde la route HTTP du module (`GET /api/bootlog`) au
+  chargement de chaque page et n'ajoute le lien de navigation que si elle
+  répond, évitant tout lien mort quand le module est désactivé ou retiré.
 
 Étapes pour créer un nouveau module dans un projet basé sur ce framework :
 
