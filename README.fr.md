@@ -29,6 +29,7 @@ ESP32-Foundation/
 ├── platformio.ini
 ├── README.md                       version anglaise
 ├── README.fr.md                    ce fichier
+├── CHANGELOG.md                    historique des versions
 ├── VERSION
 ├── web_src/                         sources de l'interface web (HTML/CSS/JS), à modifier ici
 │       debug.html                  page /debug, servie seulement si ENABLE_BOOT_LOG
@@ -176,6 +177,10 @@ indépendamment des autres.
 | Fichiers (`/files`) | ![Fichiers](docs/pictures/ESP32-Foundation-Fichiers.jpeg) |
 | Logs (`/logs`) | ![Logs](docs/pictures/ESP32-Foundation-Logs.jpeg) |
 | Mise à jour (`/ota`) | ![Mise à jour](docs/pictures/ESP32-Foundation-Mise-a-Jour.jpeg) |
+
+## Journal des modifications
+
+Voir [CHANGELOG.md](CHANGELOG.md) pour l'historique des versions.
 
 ## Licence
 
