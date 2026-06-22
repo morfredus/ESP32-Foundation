@@ -43,6 +43,7 @@ ESP32-Foundation/
 │       ARCHITECTURE.md
 │       BOOT_LOG.md                 optional BootLog module (reboot journal)
 │       INTEGRATION_GUIDE.md
+│       WIFI_SETUP.md              first boot, secrets.h, captive config portal
 ├── examples/
 │   ├── api/                        API routing example (GET/POST/JSON)
 │   │       platformio.ini
@@ -104,6 +105,12 @@ pio run                                            # build the firmware
 pio run --target uploadfs                          # flash data/ (web UI, generated from web_src/)
 pio run --target upload                            # flash the firmware
 ```
+
+On first boot, if no WiFi network is known yet (no `secrets.h` and
+nothing saved), the ESP32 starts a configuration access point so you can
+enter your SSID/password from a phone or laptop. See
+[docs/WIFI_SETUP.md](docs/WIFI_SETUP.md) (currently documented in French
+— translation contributions welcome) for the full walkthrough.
 
 Important: run `pio run -t uploadfs` at least once after the very first
 flash (and again every time `web_src/` changes) — without this step, the
