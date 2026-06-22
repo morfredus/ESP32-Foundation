@@ -45,7 +45,7 @@
 // BootLog — journal de redémarrage (raison du reset, derniers logs, état
 // système avant crash). Module de débogage optionnel et autonome, voir
 // src/modules/boot_log/boot_log.h pour le détail et la procédure de retrait.
-// #define ENABLE_BOOT_LOG
+#define ENABLE_BOOT_LOG
 #ifdef ENABLE_BOOT_LOG
 #define MAX_BOOT_LOG_ENTRIES        10
 #define BOOT_LOG_BUFFER_LINES       20
@@ -55,7 +55,7 @@
 
 // --- Logs ---
 #ifndef LOG_LEVEL
-#define LOG_LEVEL 3     // 0=off 1=error 2=warn 3=info 4=debug
+#define LOG_LEVEL 4     // 0=off 1=error 2=warn 3=info 4=debug
 #endif
 #ifndef LOG_BUFFER_SIZE
 #define LOG_BUFFER_SIZE 100

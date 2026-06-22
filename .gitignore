@@ -3,3 +3,7 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+# data/ est généré par tools/minify_web.py depuis web_src/ avant chaque
+# compilation - ne pas committer le résultat de minification.
+/data/

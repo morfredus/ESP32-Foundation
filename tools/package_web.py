@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-package_web.py — Construit l'image LittleFS (data/) et l'écrit dans
-.pio/build/<env>/littlefs.bin, prête à être flashée avec :
+package_web.py — Construit l'image LittleFS à partir de data/ (généré par
+minify_web.py depuis web_src/) et l'écrit dans .pio/build/<env>/littlefs.bin,
+prête à être flashée avec :
     pio run --target uploadfs
 
 Wrapper fin autour de la commande PlatformIO pour l'inclure dans un pipeline

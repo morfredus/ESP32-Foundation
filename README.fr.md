@@ -30,7 +30,7 @@ ESP32-Foundation/
 ├── README.md                       version anglaise
 ├── README.fr.md                    ce fichier
 ├── VERSION
-├── data/                            interface web (HTML/CSS/JS) servie depuis LittleFS
+├── web_src/                         sources de l'interface web (HTML/CSS/JS), à modifier ici
 │       debug.html                  page /debug, servie seulement si ENABLE_BOOT_LOG
 │       files.html
 │       index.html
@@ -39,6 +39,7 @@ ESP32-Foundation/
 │       ota.html
 │       style.css
 │       system.html
+├── data/                            généré par tools/minify_web.py depuis web_src/, ne pas modifier - servi depuis LittleFS
 ├── docs/
 │       ARCHITECTURE.md
 │       BOOT_LOG.md                 module optionnel BootLog (journal de redémarrage)
@@ -101,12 +102,12 @@ ESP32-Foundation/
 ```bash
 cp include/secrets_example.h include/secrets.h   # WiFi de développement (optionnel)
 pio run                                            # compile le firmware
-pio run --target uploadfs                          # flashe data/ (interface web)
+pio run --target uploadfs                          # flashe data/ (interface web, générée depuis web_src/)
 pio run --target upload                            # flashe le firmware
 ```
 
 Important : exécuter `pio run -t uploadfs` au moins une fois après le tout
-premier flash (et à chaque modification de `data/`) — sans cette étape,
+premier flash (et à chaque modification de `web_src/`) — sans cette étape,
 l'interface web LittleFS est vide et toute page renvoie une page blanche ou
 une erreur 404, même si le firmware fonctionne correctement. Voir l'explication
 détaillée dans
@@ -157,7 +158,7 @@ indépendamment des autres.
 | Module | Rôle |
 |---|---|
 | `exampleModule` | Module de démonstration minimal (`src/modules/example_module/`), toujours actif. |
-| `bootLogModule` | Journal de redémarrage (raison du reset, derniers logs, instantané système avant crash). **Désactivé par défaut**, à activer avec `#define ENABLE_BOOT_LOG` dans `include/project_config.h`. Le lien de menu `/debug` apparaît automatiquement (`data/menu.js` sonde `GET /api/bootlog`) — aucune édition du menu nécessaire dans un sens comme dans l'autre. Exemple concret de module entièrement supprimable — voir [docs/BOOT_LOG.md](docs/BOOT_LOG.md). |
+| `bootLogModule` | Journal de redémarrage (raison du reset, derniers logs, instantané système avant crash). **Désactivé par défaut**, à activer avec `#define ENABLE_BOOT_LOG` dans `include/project_config.h`. Le lien de menu `/debug` apparaît automatiquement (`web_src/menu.js` sonde `GET /api/bootlog`) — aucune édition du menu nécessaire dans un sens comme dans l'autre. Exemple concret de module entièrement supprimable — voir [docs/BOOT_LOG.md](docs/BOOT_LOG.md). |
 
 ## Captures d'écran
 

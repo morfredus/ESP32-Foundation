@@ -2,7 +2,7 @@
 """
 release.py — Pipeline de release complet :
   1. version_generator.py (bump de version)
-  2. minify_web.py (assets data/)
+  2. minify_web.py (assets web_src/ -> data/)
   3. pio run (build firmware)
   4. package_web.py (build image LittleFS)
 

@@ -25,7 +25,7 @@ série branché au moment des faits :
 
 L'historique des redémarrages (borné, FIFO) est consultable en JSON sur
 `GET /api/bootlog`, et affiché sur la page web `/debug`
-(`data/debug.html`).
+(`web_src/debug.html`).
 
 ## Activation / désactivation
 
@@ -73,13 +73,13 @@ log au buffer circulaire du module :
 ```
 
 Le lien de navigation vers `/debug` apparaît automatiquement dans le menu
-(`data/menu.js`) **uniquement si le module est actif** : `menu.js` sonde
+(`web_src/menu.js`) **uniquement si le module est actif** : `menu.js` sonde
 `GET /api/bootlog` au chargement de chaque page et n'ajoute le lien que si
 la route répond (`r.ok`). Module désactivé ou retiré ⇒ la route n'existe
 pas (404) ⇒ aucun lien affiché, sans aucune configuration supplémentaire.
 
 Ce sont les **trois seuls fichiers du framework** touchés par ce module
-(`main.cpp`, `log_manager.cpp` et `data/menu.js`) : les deux premiers via un
+(`main.cpp`, `log_manager.cpp` et `web_src/menu.js`) : les deux premiers via un
 bloc `#ifdef ENABLE_BOOT_LOG` isolé et trivial à identifier/retirer, le
 troisième via une sonde HTTP sans dépendance de compilation.
 
@@ -138,11 +138,11 @@ désactivation (`// #define ENABLE_BOOT_LOG`) :
 2. Retirer le bloc `#ifdef ENABLE_BOOT_LOG` (include + `app.modules.add`)
    dans `src/main.cpp`.
 3. Supprimer le dossier `src/modules/boot_log/` (`boot_log.h`, `boot_log.cpp`).
-4. Supprimer `data/debug.html`.
+4. Supprimer `web_src/debug.html`.
 5. Retirer la macro `ENABLE_BOOT_LOG` et les constantes associées dans
    `include/project_config.h`.
-6. Retirer, si présentes, les règles CSS `.bootlog-entry` dans `data/style.css`.
-7. Optionnel : retirer la sonde `/api/bootlog` dans `data/menu.js` (sans
+6. Retirer, si présentes, les règles CSS `.bootlog-entry` dans `web_src/style.css`.
+7. Optionnel : retirer la sonde `/api/bootlog` dans `web_src/menu.js` (sans
    risque de l'oublier — une fois la route absente, elle ne fait jamais
    apparaître de lien et reste un appel HTTP mort sans conséquence).
 
